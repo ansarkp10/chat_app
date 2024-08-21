@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AkChatify</title>
+    <link rel="icon" type="image/png" href="{% static 'images/logo1.png' %}">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #354f52;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .welcome-message {
+            font-size: 28px;
+            font-weight: bold;
+            color: #cad2c5;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            width: 120px;
+            height: auto;
+            border-radius: 100px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .parent {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .child {
+            background-color: #52796f;
+            padding: 40px;
+            width: 400px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        h1 {
+            color: #cad2c5;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        form {
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            color: #cad2c5;
+            margin: 5px 0 10px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #a3b5a8;
+            background-color: #cad2c5;
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #84a98c;
+            background-color: #e7e7e7;
+        }
+
+        button {
+            background-color: #2f3e46;
+            padding: 12px;
+            color: #cad2c5;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: #1d2c2d;
+            transform: scale(1.05);
+        }
+
+        .avatar-selection {
+            margin: 20px 0;
+        }
+
+        .avatar-selection img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .avatar-selection img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .dark-mode-toggle {
+            margin-top: 20px;
+            cursor: pointer;
+            background: #2f3e46;
+            padding: 10px;
+            color: #cad2c5;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .dark-mode-toggle:hover {
+            background: #1d2c2d;
+        }
+
+        .file-input-container {
+            margin: 20px 0;
+        }
+
+        .file-input-container input[type="file"] {
+            display: none;
+        }
+
+        .file-input-label {
+            background: #cad2c5;
+            padding: 10px;
+            color: #2f3e46;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .file-input-label:hover {
+            background: #a3b5a8;
+        }
+
+        .preview {
+            margin-top: 10px;
+        }
+
+        .preview img {
+            max-width: 100%;
+            border-radius: 50%;
+            border: 2px solid #a3b5a8;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="parent">
+        <div class="child">
+            <div class="welcome-message">Welcome to AkChatify</div>
+            <div class="logo-container">
+                <img src="{% static 'images/logo1.png' %}" alt="Logo">
+            </div>
+           
+            <h1>Enter Room</h1>
+            <form action="" method="POST" enctype="multipart/form-data"> <!-- Updated form -->
+                {% csrf_token %}
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Username" name="username" required>
+                <label for="room">Room name</label>
+                <input type="text" id="room" placeholder="Room name" name="room" required>
+                
+                <!-- File Input for Custom Avatar -->
+                <div class="file-input-container">
+                    <label for="avatar-upload" class="file-input-label">Upload Your Profile Photo</label>
+                    <input type="file" id="avatar-upload" name="avatar" accept="image/*" onchange="previewAvatar(event)"> <!-- Added name="avatar" -->
+                    <div class="preview" id="avatar-preview"></div>
+                </div>
+                
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        function previewAvatar(event) {
+            const preview = document.getElementById('avatar-preview');
+            preview.innerHTML = '';
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    preview.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+
+
+</html>
